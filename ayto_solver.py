@@ -54,6 +54,120 @@ class random_clever_solver:
         self.remaining_options = self.remaining_options[correct_count_mask]
 
 
+class max_prob_solver(random_clever_solver):
+    def __init__(self):
+        super().__init__()
+        
+    def generate_matchbox_input(self):
+        match_probs = self.generate_match_probabilites()
+        # We dont want to pick a match that is already known to be correct
+        match_probs[match_probs == 1] = 0
+        number, index = np.unravel_index(np.argmax(match_probs, axis=None), match_probs.shape)
+        return (index, number)
+    
+    
+    def generate_matchnight_input(self):
+        match_probs = self.generate_match_probabilites()
+        # get the highest probability in each column
+        max_probs = np.max(match_probs, axis=0)
+        # get the index sorted by the highest probability
+        sorted_indices = np.argsort(-max_probs)   
+        
+        options = self.remaining_options.copy()
+        for index in sorted_indices:
+            index_probs = match_probs[:, index]
+            # get the index of highest probability for the current column 
+            max_index = np.argmax(index_probs)
+            new_options = options[options[:, index] == max_index]
+            if len(new_options) > 0:
+                options = new_options
+            else:
+                break
+            
+        random_option = random.choice(options)   
+        return random_option 
+
+
+    def generate_match_probabilites(self):
+        count_matrix = np.zeros((10,10), dtype=np.uint32)
+        for i in range(10):
+            column = self.remaining_options[:,i]
+            unique, counts = np.unique(column, return_counts=True)
+            count_matrix[unique, i] = counts
+        return count_matrix / len(self.remaining_options) 
+
+
+class min_prob_solver(max_prob_solver):
+    def __init__(self):
+        super().__init__()
+        
+    def generate_matchbox_input(self):
+        match_probs = self.generate_match_probabilites()
+        # We dont want to pick a match that is already known to be correct
+        match_probs[match_probs == 0] = 1
+        number, index = np.unravel_index(np.argmin(match_probs, axis=None), match_probs.shape)
+        return (index, number)
+    
+    
+    def generate_matchnight_input(self):
+        match_probs = self.generate_match_probabilites()
+        # We dont want to pick a match that is already known to be wrong
+        match_probs[match_probs == 0] = 1
+        # shuffle an array with 0 to 9
+        random_indices = np.random.permutation(10)
+        
+        options = self.remaining_options.copy()
+        for index in random_indices:
+            index_probs = match_probs[:, index]
+            # get the index of highest probability for the current column 
+            max_index = np.argmin(index_probs)
+            new_options = options[options[:, index] == max_index]
+            if len(new_options) > 0:
+                options = new_options
+            else:
+                break
+            
+        random_option = random.choice(options)   
+        return random_option 
+
+
+class medium_prob_solver(max_prob_solver):
+    def __init__(self):
+        super().__init__()
+        
+    def generate_matchbox_input(self):
+        match_probs = self.generate_match_probabilites()
+
+        # We want to find matches close to 50% probability
+        match_probs = np.abs(match_probs - 0.5)
+        
+        match_probs[match_probs == 0] = 1
+        number, index = np.unravel_index(np.argmin(match_probs, axis=None), match_probs.shape)
+        return (index, number)
+    
+    
+    def generate_matchnight_input(self):
+        match_probs = self.generate_match_probabilites()
+        # We want to find matches close to 50% probability
+        match_probs = np.abs(match_probs - 0.5)
+        # shuffle an array with 0 to 9
+        
+        min_probs = np.min(match_probs, axis=0)
+        # get the index sorted by the highest probability
+        sorted_indices = np.argsort(min_probs)   
+        
+        options = self.remaining_options.copy()
+        for index in sorted_indices:
+            index_probs = match_probs[:, index]
+            min_index = np.argmin(index_probs)
+            new_options = options[options[:, index] == min_index]
+            if len(new_options) > 0:
+                options = new_options
+            else:
+                break
+            
+        random_option = random.choice(options)   
+        return random_option 
 
 
 def faster_permutations(n):

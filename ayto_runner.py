@@ -41,13 +41,16 @@ if __name__ == '__main__':
 
     game_logs = []
     num_processes = cpu_count()
-    runs = 200
+    runs = 250
     
-    for solver_name, solver in [('random', ayto_solver.random_solver), ('random_clever', ayto_solver.random_clever_solver)]:
+    for solver_name, solver in [('random', ayto_solver.random_solver), 
+                                ('random_clever', ayto_solver.random_clever_solver),
+                                ('max_prob', ayto_solver.max_prob_solver),
+                                ('medium_prob', ayto_solver.medium_prob_solver)]:
         solver_log = []
         with Pool(num_processes) as pool:
             play_ayto_with_arg = partial(play_ayto, ayto_solver=solver)  
-            for log in tqdm(pool.imap_unordered(play_ayto_with_arg, range(runs)), total=runs):
+            for log in tqdm(pool.imap_unordered(play_ayto_with_arg, range(runs)), total=runs, desc=f'Running {solver_name}'):
                 solver_log += log
                 
         for entry in solver_log:
@@ -58,7 +61,7 @@ if __name__ == '__main__':
 
     df = pd.DataFrame(game_logs)
     #df.to_csv('ayto.csv', index=False)
-    print(df)
+    #print(df)
     df['solved'] = df['state'] == 'solved'
     
     fig, ax = plt.subplots(2,4)
@@ -67,7 +70,12 @@ if __name__ == '__main__':
 
     for i, solver_name in enumerate(df['solver'].unique()):
         df_solver = df[df['solver'] == solver_name]
-    
+
+        df_solved = df_solver[df_solver['state'] == 'solved']
+        percentage_solved = df_solved['run'].nunique() / runs
+        mean_events = df_solved['event_number'].mean()
+        mean_price_pool = df_solved['price_pool'].mean()
+        print(f'{solver_name} solved {percentage_solved:.2%} of the games in {mean_events:.2f} events with a mean price pool of {mean_price_pool:.2f}')
         color = colors[i]
     
         df_box = df_solver[df_solver["event_type"] == 'box']
@@ -89,6 +97,8 @@ if __name__ == '__main__':
         sns.lineplot(data=df_night, ax=ax[6], label=f'{solver_name}', color=color, x='event_number', y='matches')
         
         sns.lineplot(data=df_night, ax=ax[7], label=f'{solver_name}', color=color, x='event_number', y='solved', estimator='sum')
+        
+        
     
     fig.set_size_inches(18, 8)
     fig.subplots_adjust(left=0.04, right=0.99, bottom=0.074, top=0.97, wspace=0.36, hspace=0.2),
