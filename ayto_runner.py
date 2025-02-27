@@ -41,12 +41,12 @@ if __name__ == '__main__':
 
     game_logs = []
     num_processes = cpu_count()
-    runs = 250
+    runs = 200
     
     for solver_name, solver in [('random', ayto_solver.random_solver), 
-                                ('random_clever', ayto_solver.random_clever_solver),
-                                ('max_prob', ayto_solver.max_prob_solver),
-                                ('medium_prob', ayto_solver.medium_prob_solver)]:
+                                ('random_clever', ayto_solver.random_stateful_solver),
+                                ('max_prob', ayto_solver.max_prob_stateful_solver),
+                                ('min_max_prob', ayto_solver.min_max_prob_stateful_solver),]:
         solver_log = []
         with Pool(num_processes) as pool:
             play_ayto_with_arg = partial(play_ayto, ayto_solver=solver)  
