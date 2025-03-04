@@ -124,5 +124,3 @@ class AYTOGame:
             rows_to_copy *= i + 1
 
         return perms
-    
-    
