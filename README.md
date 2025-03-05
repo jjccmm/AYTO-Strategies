@@ -1,76 +1,97 @@
-# AYTO-Strategies
+# 🎯 AYTO-Strategies
 
-This repository is dedicated to comparing different strategies for the RTL+ show "Are You The One". The goal is to evaluate various solvers that attempt to find the correct matches using different approaches. The repository includes implementations of several solvers, each with its own strategy for making decisions based on the information available from the game events.
+This repository is dedicated to comparing different strategies for the RTL+ show **"Are You The One?"**. The goal is to evaluate various solvers that attempt to find the correct matches using different approaches. The repository includes implementations of several solvers, each with its own strategy for making decisions based on the information available from the game events.
 
+---
 
-## AYTO Game
+## 🎮 AYTO Game
 
-The `AYTOGame` class in `ayto_game.py` simulates the game environment for "Are You The One". It initializes the game with 10 players and generates all permutations of the numbers 1 to 10, selecting a random permutation as the correct matching solution. The class keeps track of the prize pool, played rounds, solved matches, blackouts, and other game states.
+The `AYTOGame` class in `ayto_game.py` simulates the game environment for **"Are You The One?"**. It initializes the game with 10 players and generates all permutations of the numbers 1 to 10, selecting a random permutation as the correct matching solution. The class keeps track of the prize pool, played rounds, solved matches, blackouts, and other game states.
 
-### Methods:
+### 🛠️ Methods:
 - `match_box(index, number)`: Takes a number and an index as input and reveals if this fits the matching solution.
 - `match_night(seating)`: Takes a vector as input and returns the number of elements that match the solution (number of lights).
-- `game_state()`: Returns the current state of the game (running, solved, game_over) and the game log.
+- `game_state()`: Returns the current state of the game (`running`, `solved`, `game_over`) and the game log.
 
+---
 
-## Solvers
+## 🧠 Solvers
 A solver is able to generate an input for the match box and the matching night and can process the results of both events. There are different `solver` classes in `ayto_solver.py`.
 
-### Methods:
+### 🛠️ Methods:
 - `generate_matchbox_input()`: Generates and returns a pair for the match box.
 - `process_matchbox_output(input, result)`: Processes the result of the match box.  
-- `generate_matchnight_input()`: Generates a seating vector for the next matching night. 
+- `generate_matchnight_input()`: Generates a seating vector for the next matching night.
 - `process_matchnight_output(input, result)`: Processes the result of the matching night.  
 
-### Random Solver
-The Random Solver does not use any information from the game events and blindly guesses the matches. It does not keep track of any constraints, previous results or previous decisions made.
+### 🎲 Random Solver
+The **Random Solver** does not use any information from the game events and blindly guesses the matches. It does not keep track of any constraints, previous results, or previous decisions made.
 
-### Paper Solver
-Paper Solver use a strategy that involves making a table of the information from the matching night and a grid that states for each pair if they can be a match or not. This is a strategy that someone could do on paper, but there will be situations where choices for the game events are made that do not fulfill all constraints known from previous events. 
+### 📜 Paper Solver
+The **Paper Solver** uses a strategy that involves making a table of the information from the matching night and a grid that states for each pair if they can be a match or not. This is a strategy that someone could do on paper, but there will be situations where choices for the game events do not fulfill all known constraints.
 
--  **Random Paper Solver:** For the unknown pairs the random paper solver tries to select random options that still seem to be valid based on the given constrains. 
+- **Random Paper Solver:** For the unknown pairs, this solver tries to select random options that still seem valid based on the given constraints.
+- **Clever Paper Solver:** Similar to the Random Paper Solver, but instead of selecting random valid pairs, it prioritizes pairs with the least amount of options left, increasing matching probabilities.
 
-- **Clever Paper Solver:** The Paper Clever Solver is similar to the Paper Random Solver but instead of selecting random valid pairs, it aims to select pairs with the least amount of options left and therefore higher matching probabilities. This approach increases the chances of finding the correct matches by focusing on the most constrained pairs.
+### 💻 PC Solver
+The **PC Solver** maintains a complete list of all remaining options that fulfill the given constraints from all previous events. As this list is quite long (10!), this is not feasible to do manually and requires computation.
 
-### PC Solver
-The PC Solver can keep a complete list of all remaining options that fulfill the given constraints from all previous events. As this list is quite long (10!) this is not possible to do manually and can only be done with a computer. 
+- **PC Random Solver:** Always selects random options from the remaining valid choices while ensuring constraints are met.
+- **PC Max Probability Solver:** Chooses the pair with the highest probability of being a match.
+- **PC Min-Max Probability Solver:** Selects pairs that minimize the worst-case scenario by optimizing the number of possible solutions left after each event.
 
-- **PC Randoom Solver:** The pc random solver always selects random options from the remaining options. The advantage here is that every choice made always fulfills all known constraints.
+---
 
-- **PC Max Probability Solver:** The pc Max Probability Solver selects the options with the highest matching probability, smaller than 100%. It calculates the probabilities for each pair and chooses the one with the highest likelihood of being a match. 
+## 🚀 Runner Script
+The `ayto_runner.py` script runs simulations of the game using different solvers and compares their performance. It uses multiprocessing to run multiple simulations in parallel and generates plots to visualize the results.
 
-- **PC Min Max Probability Solver:** The PC Min Max Solver selects options for the events that minimize the possible worst-case scenario. It takes the minimum of the maximum remaining options after the event for every possible outcome of the event. This aims to reduce the worst-case number of remaining options after each event, thereby increasing information win from each event.
+### 🛠️ Functions:
+- `play_ayto(run, ayto_solver)`: Simulates a single run of the game using the specified solver.
+- `create_plots(df)`: Generates performance plots, including metrics like remaining possibilities, percentage reduction, solved runs, positive match boxes, lights, blackouts, and prize pool earnings.
 
+---
 
-## Runner Script
-The `ayto_runner.py` script is used to run simulations of the game using different solvers and compare their performance. It uses multiprocessing to run multiple simulations in parallel and generates plots to visualize the results. 
+## 📊 Evaluation
+Each solver played **2,000 runs** of the AYTO Game. The **Random Solver** failed to solve any runs. The **Paper-based solvers** had a success rate between **13-23%**, as manually considering all constraints is difficult. The **PC-based solvers** performed significantly better as they fully utilized all constraints.
 
-#### Functions:
-- `play_ayto(run, ayto_solver)`: Simulates a single run of the game using the specified solver. It plays the match box and matching night events, processes the results, and returns the game log.
-- `create_plots(df)`: Creates plots to visualize the performance of the solvers. It generates line plots for various metrics such as remaining possibilities, percentage reduction, solved runs, positive match boxes, lights, blackouts, and remaining prize pool.
+| Solver       | Solved Runs  | Mean Events to Solve | Mean Earned Prize Pool |
+|-------------|--------------|----------------------|------------------------|
+| random       | 0.00%        | N/A                  | N/A                    |
+| paper_random | 13.15%       | 17.76                | 84,790 €               |
+| paper_clever | 23.65%       | 18.23                | 76,215 €               |
+| pc_random    | 88.45%       | 17.07                | 110,231 €              |
+| pc_max       | 98.50%       | 16.47                | 117,081 €              |
+| pc_minmax    | 99.45%       | 16.35                | 111,764 €              |
 
-## Evaluation 
+![Evaluation of all Solvers](ayto_solver_evaluation.png)
 
+The detailed evaluation shows that **Matching Nights** provide higher theoretical information gain than Match Boxes. However, only the **PC-based solvers** can fully utilize constraints to maximize information gain.
 
+### 📺 Comparison to Performance in the Show
+Participants in the show have limited ways to track decisions and derive strategies. Match Boxes provide clearer information, while Matching Nights require complex reasoning. Additionally, participants don’t always get to choose who goes into the Match Box.
 
-| Solver      | Solved Runs (%) | Mean Events to solve run  | Mean earned price pool |
-|--------------|------------------|--------|----------------------------|
-| random       | 0.00%            | nan    | nan                        |
-| paper_random | 15.79%           | 16.00  | 83,333.33                  |
-| paper_clever | 21.05%           | 17.50  | 75,000.00                  |
-| pc_random    | 89.47%           | 16.47  | 117,647.06                 |
-| pc_max       | 105.26%          | 16.20  | 135,000.00                 |
-| pc_minmax    | 105.26%          | 16.50  | 85,000.00                  |
+Despite these challenges, **7 out of 9 (78%) AYTO Germany seasons** were successfully solved, suggesting that intuition plays a crucial role. This is evident from the number of lights in the first three **Matching Nights**, where participants consistently outperform even the best solvers:
 
+| Matching Night | Average Lights (Best Solver) | Average Lights (Show) |
+|---------------|-----------------------------|----------------------|
+| 1             | 1.1                         | 2.4                  |
+| 2             | 1.4                         | 2.44                 |
+| 3             | 1.75                        | 2.9                  |
 
-## 🚀 Usage
-1. Install requirements
+🔍 **Conclusion:** Intuition matters! Love, or at least a strong gut feeling, seems to help contestants make better pairing decisions than pure mathematical calculations. Without this human factor, even advanced solvers struggle to win consistently.
+
+---
+
+## ⚙️ Usage
+
+1️⃣ Install requirements:
 ```bash
-    pip install -r requirements.txt
+pip install -r requirements.txt
 ```
-2. (Optional) Implement own solver classes in `ayto_solver.py` and add them in the `ayto_runner.py` script.
 
-3. Set the desired number of `runs` in `ayto_runner.py` and run the script:
+2️⃣ (Optional) Implement your own solver classes in `ayto_solver.py` and add them to `ayto_runner.py`.
+
+3️⃣ Set the desired number of runs in `ayto_runner.py` and run the script:
 ```bash
-    python ayto_runner.py
+python ayto_runner.py
 ```
