@@ -4,8 +4,8 @@ This repository is dedicated to comparing different strategies for the RTL+ show
 
 
 ## 📱 Follow @AYTOrakel on Instagram
-This is a side project from AYTOrakel.
-[Follow AYTOrakel on Instagram](https://www.instagram.com/AYTOrakel) to stay up to date and join the discussions. 
+This is a side project from AYTOrakel.\
+[Follow AYTOrakel on Instagram](https://www.instagram.com/AYTOrakel) to stay up to date and join the discussions. \
 [Check out the AYTOrakel GitHub](https://github.com/jjccmm/AYTOrakel) to make your own predictions. 
 
 
