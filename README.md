@@ -2,7 +2,12 @@
 
 This repository is dedicated to comparing different strategies for the RTL+ show **"Are You The One?"**. The goal is to evaluate various solvers that attempt to find the correct matches using different approaches. The repository includes implementations of several solvers, each with its own strategy for making decisions based on the information available from the game events.
 
----
+
+## 📱 Follow @AYTOrakel on Instagram
+This is a side project from AYTOrakel.
+[Follow AYTOrakel on Instagram](https://www.instagram.com/AYTOrakel) to stay up to date and join the discussions. 
+[Check out the AYTOrakel GitHub](https://github.com/jjccmm/AYTOrakel) to make your own predictions. 
+
 
 ## 🎮 AYTO Game
 
@@ -13,7 +18,6 @@ The `AYTOGame` class in `ayto_game.py` simulates the game environment for **"Are
 - `match_night(seating)`: Takes a vector as input and returns the number of elements that match the solution (number of lights).
 - `game_state()`: Returns the current state of the game (`running`, `solved`, `game_over`) and the game log.
 
----
 
 ## 🧠 Solvers
 A solver is able to generate an input for the match box and the matching night and can process the results of both events. There are different `solver` classes in `ayto_solver.py`.
@@ -40,7 +44,7 @@ The **PC Solver** maintains a complete list of all remaining options that fulfil
 - **PC Max Probability Solver:** Chooses the pair with the highest probability of being a match.
 - **PC Min-Max Probability Solver:** Selects pairs that minimize the worst-case scenario by optimizing the number of possible solutions left after each event.
 
----
+
 
 ## 🚀 Runner Script
 The `ayto_runner.py` script runs simulations of the game using different solvers and compares their performance. It uses multiprocessing to run multiple simulations in parallel and generates plots to visualize the results.
@@ -49,7 +53,7 @@ The `ayto_runner.py` script runs simulations of the game using different solvers
 - `play_ayto(run, ayto_solver)`: Simulates a single run of the game using the specified solver.
 - `create_plots(df)`: Generates performance plots, including metrics like remaining possibilities, percentage reduction, solved runs, positive match boxes, lights, blackouts, and prize pool earnings.
 
----
+
 
 ## 📊 Evaluation
 Each solver played **2,000 runs** of the AYTO Game. The **Random Solver** failed to solve any runs. The **Paper-based solvers** had a success rate between **13-23%**, as manually considering all constraints is difficult. The **PC-based solvers** performed significantly better as they fully utilized all constraints.
@@ -80,7 +84,7 @@ Despite these challenges, **7 out of 9 (78%) AYTO Germany seasons** were success
 
 🔍 **Conclusion:** Intuition matters! Love, or at least a strong gut feeling, seems to help contestants make better pairing decisions than pure mathematical calculations. Without this human factor, even advanced solvers struggle to win consistently.
 
----
+
 
 ## ⚙️ Usage
 
