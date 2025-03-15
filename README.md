@@ -11,7 +11,7 @@ This is a side project from AYTOrakel.\
 
 ## 🎮 AYTO Game
 
-The `AYTOGame` class in `ayto_game.py` simulates the game environment for **"Are You The One?"**. It initializes the game with 10 players and generates all permutations of the numbers 1 to 10, selecting a random permutation as the correct matching solution. The class keeps track of the prize pool, played rounds, solved matches, blackouts, and other game states.
+The `AYTOGame` class in `ayto_game.py` simulates the game environment for **"Are You The One?"**. It initializes the game with 10 players and generates all permutations of the numbers 1 to 10, selecting a random permutation as the correct matching solution. The class keeps track of the prize pool, played rounds, solved matches, blackouts, and other game states. In the traditional way, the game is played over 10 weeks with two events each: first, the Match Box (odd event number) and then the Matching Night (even event number).
 
 ### 🛠️ Methods:
 - `match_box(index, number)`: Takes a number and an index as input and reveals if this fits the matching solution.
